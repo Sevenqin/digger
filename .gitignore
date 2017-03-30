@@ -2,3 +2,4 @@
 *.txt
 logs/*
 test.py
+dict/hydra.*
