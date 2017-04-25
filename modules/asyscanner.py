@@ -6,8 +6,8 @@ import sys
 import re
 import threadpool
 
-HOST_Arr = ["192.168.10-200.0/24","172.163.0.0/16","192.168.222.25"]
-PORTS_ARR = ["21","22","23","80","7979","8080"]
+HOST_Arr = ["10.227.227.1/24","10.229.106.1/23"]
+PORTS_ARR = ["21","22","23","80","7979","8080","8001"]
 THREAD_NUM = 10
 
 scanner_results_path = sys.path[0]+'/scanner_results.txt'
@@ -70,8 +70,8 @@ def scanner(l):
     nm = nmap.PortScanner()
     nm.scan(hosts=l,arguments='-T4 -A -sS -p'+ports)
     f=open(scanner_results_path,'a')
-    f.write(nm.csv())
-    f.close()
+    # f.write(nm.csv())
+    # f.close()
     # 将打开的端口信息append到scan_result中
     scan_result = getScannerResult()
     hostsList = []
@@ -80,6 +80,8 @@ def scanner(l):
             for port in nm[host]['tcp'].keys():
                 if nm[host]['tcp'][port]['state']=='open':
                     hostsList.append({'host':host,'port':port,'hostname':nm[host].hostname(),'name':nm[host]['tcp'][port]['name']})
+                    f.write(host+':'+str(port)+'\n')
+    f.close()
     return hostsList
 
 def getScannerResult():
